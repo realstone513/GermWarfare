@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MapGenerator : MonoBehaviour
+public class BoardGenerator : MonoBehaviour
 {
     public GameObject tileObject;
 
     public int row = 5;
     public int col = 5;
+
+    public bool isPlayer1 = true;
 
     private List<List<GameObject>> tiles;
     private RaycastHit2D hit;
@@ -47,6 +49,9 @@ public class MapGenerator : MonoBehaviour
 
             if (hit.collider != null)
             {
+                Tile curTile = hit.collider.gameObject.GetComponent<Tile>();
+                curTile.SetGerm(isPlayer1 ? GermState.Player1 : GermState.Player2);
+                isPlayer1 = !isPlayer1;
                 Debug.Log(hit.collider.gameObject.name);
             }
         }

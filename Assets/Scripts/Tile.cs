@@ -4,6 +4,7 @@ public class Tile : MonoBehaviour
 {
     private SpriteRenderer spriteRenderer;
     private Vector2 coord;
+    public Germ germ;
 
     private void Awake()
     {
@@ -16,5 +17,10 @@ public class Tile : MonoBehaviour
         coord.x = x;
         coord.y = y;
         spriteRenderer.color = color;
+    }
+
+    public void SetGerm(GermState state)
+    {
+        germ.SetState(state);
     }
 }
