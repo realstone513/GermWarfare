@@ -3,34 +3,26 @@ using UnityEngine;
 
 public class MapGenerator : MonoBehaviour
 {
-    public GameObject tile;
+    public GameObject tileObject;
 
     public int row = 5;
     public int col = 5;
 
-    private Color black;
-    private Color white;
     private List<List<GameObject>> tiles;
-    private List<GameObject> objects;
+    private RaycastHit2D hit;
 
     private void Awake()
     {
-        black = Color.black;
-        white = Color.white;
+        GenerateMap();
     }
     
     private void GenerateMap()
     {
-        if (tiles != null)
-        {
-            for (int x = 0; x < row; x++)
-                tiles[x].Clear();
+        Color black = Color.black;
+        Color white = Color.white;
 
-            tiles.Clear();
-        }
-
-        float spawnPosRow = row % 2 == 1 ? -row / 2 : -row / 2 + 0.5f;
-        float spawnPosCol = col % 2 == 1 ? -col / 2 : -col / 2 + 0.5f;
+        float spawnPosXStart = row % 2 == 1 ? -row / 2 : -row / 2 + 0.5f;
+        float spawnPosYStart = col % 2 == 1 ? -col / 2 : -col / 2 + 0.5f;
 
         tiles = new List<List<GameObject>>();
         for (int x = 0; x < row; x++)
@@ -38,22 +30,25 @@ public class MapGenerator : MonoBehaviour
             tiles.Add(new List<GameObject>());
             for (int y = 0; y < col; y++)
             {
-                Vector2 spawnPos = new (spawnPosRow + x, spawnPosCol + y);
-                tiles[x].Add(Instantiate(tile, spawnPos, Quaternion.identity, transform));
-                tiles[x][y].name = $"tile {x}, {y}";
-                tiles[x][y].GetComponent<SpriteRenderer>().color =
-                    ((x + y) % 2 == 1) ? black : white;
-
-                objects.Add(tiles[x][y]);
+                Vector2 spawnPos = new (spawnPosXStart + x, spawnPosYStart + y);
+                tiles[x].Add(Instantiate(tileObject, spawnPos, Quaternion.identity, transform));
+                Tile tile = tiles[x][y].GetComponent<Tile>();
+                tile.SetTileData($"tile {x}, {y}", x, y, (x + y) % 2 == 1 ? black : white);
             }
         }
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.A))
+        if (Input.GetMouseButtonDown(0))
         {
-            GenerateMap();
+            Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            hit = Physics2D.Raycast(pos, Vector2.zero);
+
+            if (hit.collider != null)
+            {
+                Debug.Log(hit.collider.gameObject.name);
+            }
         }
     }
 }
