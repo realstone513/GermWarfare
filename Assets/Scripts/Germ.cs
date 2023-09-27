@@ -1,12 +1,5 @@
 using UnityEngine;
 
-public enum GermState
-{
-    Inactive,
-    Player1,
-    Player2,
-}
-
 public class Germ : MonoBehaviour
 {
     private SpriteRenderer spriteRenderer;
@@ -24,9 +17,9 @@ public class Germ : MonoBehaviour
         else
         {
             if (state != GermState.Player1)
-                spriteRenderer.color = Color.red;
+                spriteRenderer.color = GameManager.Instance.GetColor(Colors.Red);
             else if (state != GermState.Player2)
-                spriteRenderer.color = Color.blue;
+                spriteRenderer.color = GameManager.Instance.GetColor(Colors.Blue);
             gameObject.SetActive(true);
         }
     }

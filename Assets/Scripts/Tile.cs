@@ -6,6 +6,16 @@ public class Tile : MonoBehaviour
     private Vector2 coord;
     public Germ germ;
 
+    public bool GermActive
+    {
+        get { return germ.gameObject.activeSelf; }
+    }
+
+    public Vector2 Coord
+    {
+        get { return coord; }
+    }
+
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
