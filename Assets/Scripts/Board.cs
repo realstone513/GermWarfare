@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Board : MonoBehaviour
@@ -49,13 +48,12 @@ public class Board : MonoBehaviour
 
     private void RetryButton()
     {
-        Debug.Log("Load game scene");
-        SceneManager.LoadScene(0);
+        gm.LoadScene(Scenes.Game);
     }
 
     private void ExitButton()
     {
-        Debug.Log("Load title scene");
+        gm.LoadScene(Scenes.Title);
     }
 
     private void Update()

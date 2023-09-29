@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : Singleton<GameManager>
 {
@@ -20,6 +21,23 @@ public class GameManager : Singleton<GameManager>
     {
         return colors[(int)color];
     }
+
+    public void SetWH(int width, int height)
+    {
+        this.width = width;
+        this.height = height;
+    }
+
+    public void LoadScene(Scenes index)
+    {
+        SceneManager.LoadScene((int)index);
+    }
+}
+
+public enum Scenes
+{
+    Title,
+    Game,
 }
 
 public enum GermState
