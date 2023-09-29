@@ -788,7 +788,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &840495391
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1305,7 +1305,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1708039322}
-  - component: {fileID: 1708039323}
   m_Layer: 0
   m_Name: Tile Overlays
   m_TagString: Untagged
@@ -1330,20 +1329,6 @@ Transform:
   - {fileID: 891358341}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1708039323
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1708039321}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7891ca0ea97b4fa40af7043612ba3262, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  nearOverlay: {fileID: 4027424473581130311, guid: 0b5a390eef791c747a8ad83cd727a637, type: 3}
-  farOverlay: {fileID: 4019203991406502142, guid: 5a86a959d66b3a140acd25337d804248, type: 3}
 --- !u!1 &1735563551
 GameObject:
   m_ObjectHideFlags: 0
@@ -2251,9 +2236,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2000835675}
     - target: {fileID: 2235870054624025540, guid: 130154e72c343c4419dfdf273dcc8716, type: 3}
+      propertyPath: farOverlay
+      value: 
+      objectReference: {fileID: 4019203991406502142, guid: 5a86a959d66b3a140acd25337d804248, type: 3}
+    - target: {fileID: 2235870054624025540, guid: 130154e72c343c4419dfdf273dcc8716, type: 3}
       propertyPath: resultText
       value: 
       objectReference: {fileID: 1461552954}
+    - target: {fileID: 2235870054624025540, guid: 130154e72c343c4419dfdf273dcc8716, type: 3}
+      propertyPath: nearOverlay
+      value: 
+      objectReference: {fileID: 4027424473581130311, guid: 0b5a390eef791c747a8ad83cd727a637, type: 3}
     - target: {fileID: 2235870054624025540, guid: 130154e72c343c4419dfdf273dcc8716, type: 3}
       propertyPath: resultPanel
       value: 
@@ -2267,6 +2260,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 203889317}
     - target: {fileID: 2235870054624025540, guid: 130154e72c343c4419dfdf273dcc8716, type: 3}
+      propertyPath: farTransform
+      value: 
+      objectReference: {fileID: 891358341}
+    - target: {fileID: 2235870054624025540, guid: 130154e72c343c4419dfdf273dcc8716, type: 3}
       propertyPath: player1Score
       value: 
       objectReference: {fileID: 1836426231}
@@ -2274,6 +2271,10 @@ PrefabInstance:
       propertyPath: player2Score
       value: 
       objectReference: {fileID: 2096234252}
+    - target: {fileID: 2235870054624025540, guid: 130154e72c343c4419dfdf273dcc8716, type: 3}
+      propertyPath: nearTransform
+      value: 
+      objectReference: {fileID: 855735037}
     - target: {fileID: 2642062140864152153, guid: 130154e72c343c4419dfdf273dcc8716, type: 3}
       propertyPath: m_Name
       value: Board

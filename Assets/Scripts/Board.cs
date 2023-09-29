@@ -21,11 +21,22 @@ public class Board : MonoBehaviour
     public Button retryButton;
     public Button exitButton;
 
+    public GameObject nearOverlay;
+    public GameObject farOverlay;
+    public Transform nearTransform;
+    public Transform farTransform;
+
+    private Queue<GameObject> unuseNearOverlayQueue = new();
+    private Queue<GameObject> unuseFarOverlayQueue = new();
+    private Queue<GameObject> useNearOverlayQueue = new();
+    private Queue<GameObject> useFarOverlayQueue = new();
+
     private List<List<Tile>> tiles;
     private RaycastHit2D hit;
     private GameManager gm;
     private Tile curSelectTile;
-    private List<Vector2> neighborList;
+    private List<Vector2> nearNeighborList;
+    private List<Vector2> farNeighborList;
 
     private void Start()
     {
@@ -36,14 +47,96 @@ public class Board : MonoBehaviour
         SetStartPoint();
         ChangeTurn(1);
 
-        neighborList = new();
+        nearNeighborList = new();
         for (int i = -1; i <= 1; i++)
             for (int j = -1; j <= 1; j++)
-                neighborList.Add(new Vector2(i, j));
+                nearNeighborList.Add(new Vector2(i, j));
 
+        farNeighborList = new();
+        for (int i = -2; i <= 2; i++)
+            for (int j = -2; j <= 2; j++)
+            {
+                Vector2 vector = new (i, j);
+                if (!nearNeighborList.Contains(vector))
+                    farNeighborList.Add(vector);
+            }
+
+        nearNeighborList.Remove(Vector2.zero);
         resultPanel.SetActive(false);
         retryButton.onClick.AddListener(RetryButton);
         exitButton.onClick.AddListener(ExitButton);
+
+        for (int i = 0; i < 8; i++)
+        {
+            GameObject nearObj = Instantiate(nearOverlay, nearTransform);
+            unuseNearOverlayQueue.Enqueue(nearObj);
+            nearObj.SetActive(false);
+        }
+
+        for (int i = 0; i < 16; i++)
+        {
+            GameObject farObj = Instantiate(farOverlay, farTransform);
+            unuseFarOverlayQueue.Enqueue(farObj);
+            farObj.SetActive(false);
+        }
+    }
+
+    private void ShowOverlays(Tile target)
+    {
+        Vector2 tartgetCoord = target.Coord;
+        foreach (Vector2 near in nearNeighborList)
+        {
+            if (CheckBorder(near + tartgetCoord))
+            {
+                GameObject nearObj = unuseNearOverlayQueue.Dequeue();
+                Vector3 dest = target.transform.position;
+                dest.x += near.x;
+                dest.y += near.y;
+                nearObj.transform.position = dest;
+                nearObj.SetActive(true);
+                useNearOverlayQueue.Enqueue(nearObj);
+            }
+        }
+
+        foreach (Vector2 far in farNeighborList)
+        {
+            if (CheckBorder(far + tartgetCoord))
+            {
+                GameObject farObj = unuseFarOverlayQueue.Dequeue();
+                Vector3 dest = target.transform.position;
+                dest.x += far.x;
+                dest.y += far.y;
+                farObj.transform.position = dest;
+                farObj.SetActive(true);
+                useFarOverlayQueue.Enqueue(farObj);
+            }
+        }
+    }
+
+    private bool CheckBorder(Vector2 target)
+    {
+        if (target.x >= 0 && target.x <= width - 1 && target.y >= 0 && target.y <= height - 1)
+            return true;
+        return false;
+    }
+
+    private void HideOverlays()
+    {
+        while (useNearOverlayQueue.Count > 0)
+        {
+            GameObject near = useNearOverlayQueue.Dequeue();
+            near.SetActive(false);
+            unuseNearOverlayQueue.Enqueue(near);
+        }
+        useNearOverlayQueue.Clear();
+
+        while (useFarOverlayQueue.Count > 0)
+        {
+            GameObject far = useFarOverlayQueue.Dequeue();
+            far.SetActive(false);
+            unuseFarOverlayQueue.Enqueue(far);
+        }
+        useFarOverlayQueue.Clear();
     }
 
     private void RetryButton()
@@ -72,7 +165,7 @@ public class Board : MonoBehaviour
                     if (targetTile == curSelectTile) // cancel
                     {
                         SwitchCanPut(false);
-                        // overlay off
+                        HideOverlays();
                         return;
                     }
 
@@ -98,8 +191,8 @@ public class Board : MonoBehaviour
                         else
                         {
                             SwitchCanPut(false);
-                            // overlay off
                         }
+                        HideOverlays();
                     }
                 }
                 else
@@ -108,7 +201,7 @@ public class Board : MonoBehaviour
                         (!isPlayer1 && targetTile.germ.germState == GermState.Player2))
                     {
                         SwitchCanPut(true, targetTile);
-                        // overlay on
+                        ShowOverlays(targetTile);
                     }
                 }
                 // Debug.Log(hit.collider.gameObject.name);
@@ -121,7 +214,7 @@ public class Board : MonoBehaviour
         GermState targetState = isPlayer1 ? GermState.Player1 : GermState.Player2;
         Vector2 coord = dest.Coord;
 
-        foreach (Vector2 neighbor in neighborList)
+        foreach (Vector2 neighbor in nearNeighborList)
         {
             Vector2 neighborCoord = coord + neighbor;
             Tile target = GetTile(neighborCoord);

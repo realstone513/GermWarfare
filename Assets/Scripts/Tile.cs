@@ -3,7 +3,7 @@ using UnityEngine;
 public class Tile : MonoBehaviour
 {
     private SpriteRenderer spriteRenderer;
-    public Vector2 coord;
+    private Vector2 coord;
     public Germ germ;
 
     public bool GermActive
