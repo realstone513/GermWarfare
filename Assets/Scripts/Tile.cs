@@ -3,7 +3,7 @@ using UnityEngine;
 public class Tile : MonoBehaviour
 {
     private SpriteRenderer spriteRenderer;
-    private Vector2 coord;
+    public Vector2 coord;
     public Germ germ;
 
     public bool GermActive
@@ -21,9 +21,9 @@ public class Tile : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
-    public void SetTileData(string name, float x, float y, Color color)
+    public void SetTileData(float x, float y, Color color)
     {
-        gameObject.name = name;
+        gameObject.name = $"Tile ({x}, {y})";
         coord.x = x;
         coord.y = y;
         spriteRenderer.color = color;

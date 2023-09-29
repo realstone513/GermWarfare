@@ -45,5 +45,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tileObject: {fileID: 2042658229352780693, guid: c4e016a671eac98489f610f3e751c5f1, type: 3}
-  row: 5
-  col: 5
+  isPlayer1: 1
+  canPut: 0
+  player1Score: {fileID: 0}
+  player2Score: {fileID: 0}
+  turnDisplay: {fileID: 0}

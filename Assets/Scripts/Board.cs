@@ -1,28 +1,40 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Board : MonoBehaviour
 {
     public GameObject tileObject;
 
-    private int row;
-    private int col;
+    private int width;
+    private int height;
 
     public bool isPlayer1 = true;
     public bool canPut = false;
 
-    private List<List<GameObject>> tiles;
+    public TextMeshProUGUI player1Score;
+    public TextMeshProUGUI player2Score;
+    public TextMeshProUGUI turnDisplay;
+
+    private List<List<Tile>> tiles;
     private RaycastHit2D hit;
     private GameManager gm;
     private Tile curSelectTile;
+    private List<Vector2> neighborList;
 
     private void Start()
     {
         gm = GameManager.Instance;
-        row = gm.row;
-        col = gm.col;
+        height = gm.height;
+        width = gm.width;
         GenerateMap();
         SetStartPoint();
+        ChangeTurn(1);
+
+        neighborList = new ();
+        for (int i = -1; i <= 1; i++)
+            for (int j = -1; j <= 1; j++)
+                neighborList.Add(new Vector2(i, j));
     }
 
     private void Update()
@@ -34,58 +46,77 @@ public class Board : MonoBehaviour
 
             if (hit.collider != null)
             {
-                Tile curTile = hit.collider.gameObject.GetComponent<Tile>();
+                Tile targetTile = hit.collider.gameObject.GetComponent<Tile>();
 
                 if (canPut)
                 {
-                    if (curTile == curSelectTile) // cancel
+                    if (targetTile == curSelectTile) // cancel
                     {
                         SwitchCanPut(false);
+                        // overlay off
+                        return;
                     }
 
-                    if (!curTile.GermActive)
+                    if (!targetTile.GermActive)
                     {
                         Vector2 originCoord = curSelectTile.Coord;
-                        Vector2 curCoord = curTile.Coord;
+                        Vector2 curCoord = targetTile.Coord;
 
                         int diffX = Mathf.Abs((int)(originCoord.x - curCoord.x));
                         int diffY = Mathf.Abs((int)(originCoord.y - curCoord.y));
 
-                        if (CheckNearTile(diffX, diffY))
+                        if (CheckNearTile(diffX, diffY)) // Near
                         {
-                            Debug.Log("near");
-
-                            curTile.SetGerm(isPlayer1 ? GermState.Player1 : GermState.Player2);
-                            isPlayer1 = !isPlayer1;
-                            SwitchCanPut(false);
-
+                            ChangeNeighborGerm(targetTile);
+                            ChangeTurn(isPlayer1 ? 2 : 1);
                         }
-                        else if (CheckFarTile(diffX, diffY))
+                        else if (CheckFarTile(diffX, diffY)) // Far
                         {
-                            Debug.Log("far");
                             curSelectTile.SetGerm(GermState.Inactive);
-
-                            curTile.SetGerm(isPlayer1 ? GermState.Player1 : GermState.Player2);
-                            isPlayer1 = !isPlayer1;
-                            SwitchCanPut(false);
+                            ChangeNeighborGerm(targetTile);
+                            ChangeTurn(isPlayer1 ? 2 : 1);
                         }
                         else
                         {
-                            Debug.Log("can not put");
                             SwitchCanPut(false);
                         }
                     }
                 }
                 else
                 {
-                    if (curTile.GermActive)
+                    if (targetTile.GermActive)
                     {
-                        SwitchCanPut(true, curTile);
+                        SwitchCanPut(true, targetTile);
+                        // overlay on
                     }
                 }
                 // Debug.Log(hit.collider.gameObject.name);
             }
         }
+    }
+
+    private void ChangeNeighborGerm(Tile dest)
+    {
+        GermState targetState = isPlayer1 ? GermState.Player1 : GermState.Player2;
+        Vector2 coord = dest.Coord;
+
+        foreach (Vector2 neighbor in neighborList)
+        {
+            Vector2 neighborCoord = coord + neighbor;
+            Tile target = GetTile(neighborCoord);
+            if (target != null && target.GermActive)
+            {
+                GetTile(neighborCoord).SetGerm(targetState);
+            }
+        }
+        dest.SetGerm(targetState);
+    }
+
+    private Tile GetTile(Vector2 coord)
+    {
+        if (coord.x < 0 || coord.x > width - 1 || coord.y < 0 || coord.y > height - 1)
+            return null;
+        return tiles[(int)coord.x][(int)coord.y];
     }
 
     private bool CheckNearTile(int diffX, int diffY)
@@ -101,13 +132,12 @@ public class Board : MonoBehaviour
     {
         if ((diffX == 2 && diffY == 0) || (diffX == 0 && diffY == 2)) // up down left right 2
             return true;
-        if (diffX + diffY == 3 && (diffX != 0 && diffY != 0)) // diagonal 2
+        if (diffX + diffY == 3 && !(diffX == 0 || diffY == 0)) // 1,2 2,1
             return true;
         if (diffX == 2 && diffY == 2) // diagonal 2
             return true;
         return false;
     }
-
 
     private void SwitchCanPut(bool value, Tile curTile = null)
     {
@@ -115,43 +145,83 @@ public class Board : MonoBehaviour
         {
             curSelectTile = curTile;
             canPut = true;
-            Debug.Log("can put mode on");
         }
         else
         {
             curSelectTile = null;
             canPut = false;
-            Debug.Log("can put mode off");
         }
+    }
+
+    private void ChangeTurn(int num)
+    {
+        if (num == 1) // Player1
+        {
+            turnDisplay.text = "P1";
+            turnDisplay.color = gm.GetColor(Colors.Red);
+            isPlayer1 = true;
+        }
+        else if (num == 2) // Player2
+        {
+            turnDisplay.text = "P2";
+            turnDisplay.color = gm.GetColor(Colors.Blue);
+            isPlayer1 = false;
+        }
+
+        SwitchCanPut(false);
+        CheckBoardScore();
+    }
+
+    private void CheckBoardScore()
+    {
+        int player1Count = 0;
+        int player2Count = 0;
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                GermState state = tiles[x][y].germ.germState;
+                if (state == GermState.Player1)
+                    player1Count++;
+                else if (state == GermState.Player2)
+                    player2Count++;
+            }
+        }
+        player1Score.text = $"{player1Count}";
+        player2Score.text = $"{player2Count}";
     }
 
     private void SetStartPoint()
     {
-        tiles[0][0].GetComponent<Tile>().SetGerm(GermState.Player1);
-        tiles[row - 1][col - 1].GetComponent<Tile>().SetGerm(GermState.Player1);
+        // from map info. this is test
+        tiles[0][height - 1].SetGerm(GermState.Player1);
+        tiles[width - 1][0].SetGerm(GermState.Player1);
 
-        tiles[0][col - 1].GetComponent<Tile>().SetGerm(GermState.Player2);
-        tiles[row - 1][0].GetComponent<Tile>().SetGerm(GermState.Player2);
+        tiles[0][0].SetGerm(GermState.Player2);
+        tiles[width - 1][height - 1].SetGerm(GermState.Player2);
     }
 
     private void GenerateMap()
     {
-        Color black = gm.GetColor(Colors.Black);
+        //Color black = gm.GetColor(Colors.Black);
         Color white = gm.GetColor(Colors.White);
 
-        float spawnPosXStart = row % 2 == 1 ? -row / 2 : -row / 2 + 0.5f;
-        float spawnPosYStart = col % 2 == 1 ? -col / 2 : -col / 2 + 0.5f;
+        float spawnPosXStart = width % 2 == 1 ? -width / 2 : -width / 2 + 0.5f;
+        float spawnPosYStart = height % 2 == 1 ? -height / 2 : -height / 2 + 0.5f;
 
-        tiles = new List<List<GameObject>>();
-        for (int x = 0; x < row; x++)
+        tiles = new List<List<Tile>>();
+        for (int x = 0; x < width; x++)
         {
-            tiles.Add(new List<GameObject>());
-            for (int y = 0; y < col; y++)
+            tiles.Add(new List<Tile>());
+            for (int y = 0; y < height; y++)
             {
                 Vector2 spawnPos = new(spawnPosXStart + x, spawnPosYStart + y);
-                tiles[x].Add(Instantiate(tileObject, spawnPos, Quaternion.identity, transform));
-                Tile tile = tiles[x][y].GetComponent<Tile>();
-                tile.SetTileData($"tile {x}, {y}", x, y, (x + y) % 2 == 1 ? black : white);
+                GameObject tileInstance = Instantiate(tileObject, spawnPos, Quaternion.identity, transform);
+                Tile tile = tileInstance.GetComponent<Tile>();
+                //tile.SetTileData(x, y, (x + y) % 2 == 1 ? black : white);
+                tile.SetTileData(x, y, white);
+                tiles[x].Add(tile);
             }
         }
     }

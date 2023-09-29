@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class GameManager : Singleton<GameManager>
 {
-    public int row = 5;
-    public int col = 5;
+    public int width = 5;
+    public int height = 5;
 
     private Color[] colors = new Color[4];
 
