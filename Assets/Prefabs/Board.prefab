@@ -50,3 +50,12 @@ MonoBehaviour:
   player1Score: {fileID: 0}
   player2Score: {fileID: 0}
   turnDisplay: {fileID: 0}
+  announcePanel: {fileID: 0}
+  announceText: {fileID: 0}
+  retryButton: {fileID: 0}
+  exitButton: {fileID: 0}
+  optionButton: {fileID: 0}
+  nearOverlay: {fileID: 4027424473581130311, guid: 0b5a390eef791c747a8ad83cd727a637, type: 3}
+  farOverlay: {fileID: 4019203991406502142, guid: 5a86a959d66b3a140acd25337d804248, type: 3}
+  nearTransform: {fileID: 0}
+  farTransform: {fileID: 0}

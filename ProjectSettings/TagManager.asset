@@ -14,7 +14,7 @@ TagManager:
   - UI
   - Board
   - Germ
-  - 
+  - Overlay
   - 
   - 
   - 
@@ -45,9 +45,9 @@ TagManager:
   - name: Board
     uniqueID: 2921546797
     locked: 0
-  - name: Germ
-    uniqueID: 2037787567
-    locked: 0
   - name: Overlay
     uniqueID: 4279759499
+    locked: 0
+  - name: Germ
+    uniqueID: 2037787567
     locked: 0

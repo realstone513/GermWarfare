@@ -12,14 +12,16 @@ public class Board : MonoBehaviour
 
     public bool isPlayer1 = true;
     public bool canPut = false;
+    private bool isPause = false;
 
     public TextMeshProUGUI player1Score;
     public TextMeshProUGUI player2Score;
     public TextMeshProUGUI turnDisplay;
-    public GameObject resultPanel;
-    public TextMeshProUGUI resultText;
+    public GameObject announcePanel;
+    public TextMeshProUGUI announceText;
     public Button retryButton;
     public Button exitButton;
+    public Button optionButton;
 
     public GameObject nearOverlay;
     public GameObject farOverlay;
@@ -62,9 +64,10 @@ public class Board : MonoBehaviour
             }
 
         nearNeighborList.Remove(Vector2.zero);
-        resultPanel.SetActive(false);
+        announcePanel.SetActive(false);
         retryButton.onClick.AddListener(RetryButton);
         exitButton.onClick.AddListener(ExitButton);
+        optionButton.onClick.AddListener(OptionButton);
 
         for (int i = 0; i < 8; i++)
         {
@@ -139,6 +142,14 @@ public class Board : MonoBehaviour
         useFarOverlayQueue.Clear();
     }
 
+    private void OptionButton()
+    {
+        announcePanel.SetActive(true);
+        announceText.text = "Pause";
+        //retryButton.text = "resume";
+        isPause = true;
+    }
+
     private void RetryButton()
     {
         gm.LoadScene(Scenes.Game);
@@ -146,7 +157,13 @@ public class Board : MonoBehaviour
 
     private void ExitButton()
     {
-        gm.LoadScene(Scenes.Title);
+        if (isPause)
+        {
+            announcePanel.SetActive(false);
+            isPause = false;
+        }
+        else
+            gm.LoadScene(Scenes.Title);
     }
 
     private void Update()
@@ -308,13 +325,13 @@ public class Board : MonoBehaviour
         // End Condition
         if (player1Count + player2Count == width * height || player1Count == 0 || player2Count == 0)
         {
-            resultPanel.SetActive(true);
+            announcePanel.SetActive(true);
             if (player1Count > player2Count)
-                resultText.text = $"Player1 Win!";
+                announceText.text = $"Player1 Win!";
             else if (player1Count < player2Count)
-                resultText.text = $"Player2 Win!";
+                announceText.text = $"Player2 Win!";
             else
-                resultText.text = $"Draw!";
+                announceText.text = $"Draw!";
         }
     }
 
