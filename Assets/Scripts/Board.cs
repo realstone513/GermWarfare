@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Board : MonoBehaviour
 {
@@ -15,6 +17,10 @@ public class Board : MonoBehaviour
     public TextMeshProUGUI player1Score;
     public TextMeshProUGUI player2Score;
     public TextMeshProUGUI turnDisplay;
+    public GameObject resultPanel;
+    public TextMeshProUGUI resultText;
+    public Button retryButton;
+    public Button exitButton;
 
     private List<List<Tile>> tiles;
     private RaycastHit2D hit;
@@ -31,10 +37,25 @@ public class Board : MonoBehaviour
         SetStartPoint();
         ChangeTurn(1);
 
-        neighborList = new ();
+        neighborList = new();
         for (int i = -1; i <= 1; i++)
             for (int j = -1; j <= 1; j++)
                 neighborList.Add(new Vector2(i, j));
+
+        resultPanel.SetActive(false);
+        retryButton.onClick.AddListener(RetryButton);
+        exitButton.onClick.AddListener(ExitButton);
+    }
+
+    private void RetryButton()
+    {
+        Debug.Log("Load game scene");
+        SceneManager.LoadScene(0);
+    }
+
+    private void ExitButton()
+    {
+        Debug.Log("Load title scene");
     }
 
     private void Update()
@@ -57,7 +78,7 @@ public class Board : MonoBehaviour
                         return;
                     }
 
-                    if (!targetTile.GermActive)
+                    if (!targetTile.GermActive) // empty tile
                     {
                         Vector2 originCoord = curSelectTile.Coord;
                         Vector2 curCoord = targetTile.Coord;
@@ -79,12 +100,14 @@ public class Board : MonoBehaviour
                         else
                         {
                             SwitchCanPut(false);
+                            // overlay off
                         }
                     }
                 }
                 else
                 {
-                    if (targetTile.GermActive)
+                    if ((isPlayer1 && targetTile.germ.germState == GermState.Player1) ||
+                        (!isPlayer1 && targetTile.germ.germState == GermState.Player2))
                     {
                         SwitchCanPut(true, targetTile);
                         // overlay on
@@ -190,6 +213,18 @@ public class Board : MonoBehaviour
         }
         player1Score.text = $"{player1Count}";
         player2Score.text = $"{player2Count}";
+
+        // End Condition
+        if (player1Count + player2Count == width * height || player1Count == 0 || player2Count == 0)
+        {
+            resultPanel.SetActive(true);
+            if (player1Count > player2Count)
+                resultText.text = $"Player1 Win!";
+            else if (player1Count < player2Count)
+                resultText.text = $"Player2 Win!";
+            else
+                resultText.text = $"Draw!";
+        }
     }
 
     private void SetStartPoint()
