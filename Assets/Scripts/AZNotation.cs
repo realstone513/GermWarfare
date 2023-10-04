@@ -20,7 +20,7 @@ public struct AZNotation
             intDigit = spacing;
 
         int decNum = 0;
-        int chIndex = 0;
+        int chIndex = -1;
 
         int intCount = total - intDigit;
         int divider = (int)Math.Pow(10, spacing);
@@ -52,6 +52,9 @@ public struct AZNotation
     // A ~ ZZ
     public readonly string GetAZString(int chIndex)
     {
+        if (chIndex < 0 || chIndex >= 702) // 최대 자리수 26 * 27
+            return string.Empty;
+
         StringBuilder result = new ();
         int alphabetLength = 26;
 

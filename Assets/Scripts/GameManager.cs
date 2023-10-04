@@ -6,8 +6,6 @@ public class GameManager : Singleton<GameManager>
     public int width = 5;
     public int height = 5;
     public AZNotation test = new ();
-    public long testInput;
-    public int azIndex;
 
     private Color[] colors = new Color[4];
 
@@ -20,23 +18,22 @@ public class GameManager : Singleton<GameManager>
         colors[3] = Color.blue;
     }
 
+    private float timer = 0;
+    private int it = 0;
+    private bool stop = false;
+
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            test.amount += testInput;
-            Debug.Log($"{test.MakeString()}");
-        }
+        if (it >= 705)
+            stop = true;
 
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            test.amount = 0;
-            Debug.Log("clear");
-        }
+        if (!stop)
+            timer += Time.deltaTime;
 
-        if (Input.GetKeyDown(KeyCode.V))
+        if (timer >= 0.02f)
         {
-            Debug.Log($"{test.GetAZString(azIndex)}");
+            timer = 0f;
+            Debug.Log($"{it}: {test.GetAZString(it++)}");
         }
     }
 
