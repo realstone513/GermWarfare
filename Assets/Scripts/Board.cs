@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.GraphicsBuffer;
 
 public class Board : MonoBehaviour
 {
@@ -13,9 +14,15 @@ public class Board : MonoBehaviour
     public bool isPlayer1 = true;
     public bool canPut = false;
     private bool isPause = false;
+    private AZNotation player1Gold = new();
+    private AZNotation player2Gold = new();
+    private float gainGoldMin = 100000000;
+    private float gainGoldMax = 10000000000;
 
     public TextMeshProUGUI player1Score;
     public TextMeshProUGUI player2Score;
+    public TextMeshProUGUI player1GoldText;
+    public TextMeshProUGUI player2GoldText;
     public TextMeshProUGUI turnDisplay;
     public GameObject announcePanel;
     public TextMeshProUGUI announceText;
@@ -50,16 +57,14 @@ public class Board : MonoBehaviour
         ChangeTurn(1);
 
         nearNeighborList = new();
-        for (int i = -1; i <= 1; i++)
-            for (int j = -1; j <= 1; j++)
-                nearNeighborList.Add(new Vector2(i, j));
-
         farNeighborList = new();
         for (int i = -2; i <= 2; i++)
             for (int j = -2; j <= 2; j++)
             {
                 Vector2 vector = new (i, j);
-                if (!nearNeighborList.Contains(vector))
+                if (i >= -1 && i <= 1 && j >= -1 && j <= 1) // i (-1, 1) && j (-1, 1)
+                    nearNeighborList.Add(new Vector2(i, j));
+                else
                     farNeighborList.Add(vector);
             }
 
@@ -146,7 +151,6 @@ public class Board : MonoBehaviour
     {
         announcePanel.SetActive(true);
         announceText.text = "Pause";
-        //retryButton.text = "resume";
         isPause = true;
     }
 
@@ -179,14 +183,14 @@ public class Board : MonoBehaviour
 
                 if (canPut)
                 {
-                    if (targetTile == curSelectTile) // cancel
+                    if (targetTile == curSelectTile) // Cancel
                     {
                         SwitchCanPut(false);
                         HideOverlays();
                         return;
                     }
 
-                    if (!targetTile.GermActive) // empty tile
+                    if (!targetTile.GermActive) // Empty Tile
                     {
                         Vector2 originCoord = curSelectTile.Coord;
                         Vector2 curCoord = targetTile.Coord;
@@ -237,10 +241,27 @@ public class Board : MonoBehaviour
             Tile target = GetTile(neighborCoord);
             if (target != null && target.GermActive)
             {
-                GetTile(neighborCoord).SetGerm(targetState);
+                ChangeGermState(target, targetState);
             }
         }
-        dest.SetGerm(targetState);
+        ChangeGermState(dest, targetState);
+    }
+
+    private void ChangeGermState(Tile tile, GermState state)
+    {
+        tile.SetGerm(state);
+        if (isPlayer1)
+        {
+            player1Gold += GetGold(gainGoldMin, gainGoldMax);
+            string txt = player1Gold.Text;
+            player1GoldText.text = $"{txt}";
+        }
+        else
+        {
+            player2Gold += GetGold(gainGoldMin, gainGoldMax);
+            string txt = player2Gold.Text;
+            player2GoldText.text = $"{txt}";
+        }
     }
 
     private Tile GetTile(Vector2 coord)
@@ -250,22 +271,27 @@ public class Board : MonoBehaviour
         return tiles[(int)coord.x][(int)coord.y];
     }
 
+    private float GetGold(float min, float max)
+    {
+        return Random.Range(min, max);
+    }
+
     private bool CheckNearTile(int diffX, int diffY)
     {
-        if ((diffX == 1 && diffY == 0) || (diffX == 0 && diffY == 1)) // up down left right 1
+        if ((diffX == 1 && diffY == 0) || (diffX == 0 && diffY == 1)) // Up Down Left Right 1
             return true;
-        if (diffX == 1 && diffY == 1) // diagonal 1
+        if (diffX == 1 && diffY == 1) // Diagonal 1
             return true;
         return false;
     }
 
     private bool CheckFarTile(int diffX, int diffY)
     {
-        if ((diffX == 2 && diffY == 0) || (diffX == 0 && diffY == 2)) // up down left right 2
+        if ((diffX == 2 && diffY == 0) || (diffX == 0 && diffY == 2)) // Up Down Left Right 2
             return true;
         if (diffX + diffY == 3 && !(diffX == 0 || diffY == 0)) // 1,2 2,1
             return true;
-        if (diffX == 2 && diffY == 2) // diagonal 2
+        if (diffX == 2 && diffY == 2) // Diagonal 2
             return true;
         return false;
     }

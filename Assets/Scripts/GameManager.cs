@@ -18,25 +18,6 @@ public class GameManager : Singleton<GameManager>
         colors[3] = Color.blue;
     }
 
-    private float timer = 0;
-    private int it = 0;
-    private bool stop = false;
-
-    private void Update()
-    {
-        if (it >= 705)
-            stop = true;
-
-        if (!stop)
-            timer += Time.deltaTime;
-
-        if (timer >= 0.02f)
-        {
-            timer = 0f;
-            Debug.Log($"{it}: {test.GetAZString(it++)}");
-        }
-    }
-
     public Color GetColor(Colors color)
     {
         return colors[(int)color];

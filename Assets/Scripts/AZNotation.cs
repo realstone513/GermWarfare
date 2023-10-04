@@ -5,52 +5,52 @@ using System.Text;
 public struct AZNotation
 {
     public BigInteger amount;
-
-    // 소수점 포함 숫자 5자리, 알파벳 0~2자리로 길이 5~7의 string을 return
-    public readonly string MakeString()
+    public readonly string Text
     {
-        int maxNumberLength = 5;    // 정수부 + 소수점 + 실수부 길이
-        int spacing = 3;            // 단위 간격 (정수부의 최대 길이)
-
-        int total = GetDigit();
-        BigInteger amount = this.amount;
-        StringBuilder result = new ();
-        int intDigit = total % spacing;
-        if (intDigit == 0)
-            intDigit = spacing;
-
-        int decNum = 0;
-        int chIndex = -1;
-
-        int intCount = total - intDigit;
-        int divider = (int)Math.Pow(10, spacing);
-        while (intCount > 0)
+        get
         {
-            if (intCount <= spacing)
-                decNum = (int)amount % divider;
+            int maxNumberLength = 5;    // 정수부 + 소수점 + 실수부 길이
+            int spacing = 3;            // 단위 간격 (정수부의 최대 길이)
 
-            amount /= divider;
-            intCount -= spacing;
-            chIndex++;
-        }
+            int total = GetDigit();
+            BigInteger amount = this.amount;
+            StringBuilder result = new();
+            int intDigit = total % spacing;
+            if (intDigit == 0)
+                intDigit = spacing;
 
-        // 정수부, 실수부
-        result.Append($"{amount}");
-        if (decNum != 0)
-            result.Append($".{decNum}");
+            int decNum = 0;
+            int chIndex = -1;
 
-        // 길이 조절
-        while (result.Length > maxNumberLength)
-            result.Remove(result.Length - 1, 1);
+            int intCount = total - intDigit;
+            int divider = (int)Math.Pow(10, spacing);
+            while (intCount > 0)
+            {
+                if (intCount <= spacing)
+                    decNum = (int)amount % divider;
 
-        // 자리수에 맞는 알파벳 추가
-        if (amount >= divider)
+                amount /= divider;
+                intCount -= spacing;
+                chIndex++;
+            }
+
+            // 정수부, 실수부
+            result.Append($"{amount}");
+            if (decNum != 0)
+                result.Append($".{decNum}");
+
+            // 길이 조절
+            while (result.Length > maxNumberLength)
+                result.Remove(result.Length - 1, 1);
+
+            // 자리수에 맞는 알파벳 추가
             result.Append(GetAZString(chIndex));
-        return result.ToString();
+            return result.ToString();
+        }
     }
 
     // A ~ ZZ
-    public readonly string GetAZString(int chIndex)
+    private readonly string GetAZString(int chIndex)
     {
         if (chIndex < 0 || chIndex >= 702) // 최대 자리수 26 * 27
             return string.Empty;
@@ -84,13 +84,54 @@ public struct AZNotation
         return digit;
     }
 
-    public static BigInteger operator +(AZNotation n1, AZNotation n2)
+    public static AZNotation operator +(AZNotation a, float b)
     {
-        return n1.amount + n2.amount;
+        a.amount += (BigInteger)b;
+        return a;
     }
-
-    public static BigInteger operator -(AZNotation n1, AZNotation n2)
+    public static AZNotation operator +(AZNotation a, double b)
     {
-        return n1.amount - n2.amount;
+        a.amount += (BigInteger)b;
+        return a;
+    }
+    public static AZNotation operator +(AZNotation a, int b)
+    {
+        a.amount += (BigInteger)b;
+        return a;
+    }
+    public static AZNotation operator +(AZNotation a, long b)
+    {
+        a.amount += (BigInteger)b;
+        return a;
+    }
+    public static AZNotation operator +(AZNotation a, decimal b)
+    {
+        a.amount += (BigInteger)b;
+        return a;
+    }
+    public static AZNotation operator -(AZNotation a, float b)
+    {
+        a.amount -= (BigInteger)b;
+        return a;
+    }
+    public static AZNotation operator -(AZNotation a, double b)
+    {
+        a.amount -= (BigInteger)b;
+        return a;
+    }
+    public static AZNotation operator -(AZNotation a, int b)
+    {
+        a.amount -= (BigInteger)b;
+        return a;
+    }
+    public static AZNotation operator -(AZNotation a, long b)
+    {
+        a.amount -= (BigInteger)b;
+        return a;
+    }
+    public static AZNotation operator -(AZNotation a, decimal b)
+    {
+        a.amount -= (BigInteger)b;
+        return a;
     }
 }
