@@ -180,7 +180,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uB3CC\uC544\uAC00\uAE30"
+  m_text: "\uD0C0\uC774\uD2C0\uB85C"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7b20d3fca688e164fb8ee759f62f92b6, type: 2}
   m_sharedMaterial: {fileID: 2050730522006954205, guid: 7b20d3fca688e164fb8ee759f62f92b6, type: 2}
@@ -1176,8 +1176,8 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1461552953}
-  - {fileID: 1707385841}
   - {fileID: 2000835674}
+  - {fileID: 1707385841}
   m_Father: {fileID: 2016234886}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1587,7 +1587,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -120, y: -20}
+  m_AnchoredPosition: {x: 120, y: -20}
   m_SizeDelta: {x: 120, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1707385842
@@ -2120,7 +2120,7 @@ GameObject:
   - component: {fileID: 2000835676}
   - component: {fileID: 2000835675}
   m_Layer: 5
-  m_Name: Exit Button
+  m_Name: Title Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2143,7 +2143,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 120, y: -20}
+  m_AnchoredPosition: {x: -120, y: -20}
   m_SizeDelta: {x: 120, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2000835675
@@ -2523,7 +2523,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uB2E4\uC2DC\uD558\uAE30"
+  m_text: "\uB3CC\uC544\uAC00\uAE30"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7b20d3fca688e164fb8ee759f62f92b6, type: 2}
   m_sharedMaterial: {fileID: 2050730522006954205, guid: 7b20d3fca688e164fb8ee759f62f92b6, type: 2}
@@ -2679,6 +2679,10 @@ PrefabInstance:
       propertyPath: retryButton
       value: 
       objectReference: {fileID: 1707385842}
+    - target: {fileID: 2235870054624025540, guid: 130154e72c343c4419dfdf273dcc8716, type: 3}
+      propertyPath: titleButton
+      value: 
+      objectReference: {fileID: 2000835675}
     - target: {fileID: 2235870054624025540, guid: 130154e72c343c4419dfdf273dcc8716, type: 3}
       propertyPath: turnDisplay
       value: 

@@ -25,8 +25,8 @@ public class Board : MonoBehaviour
     public TextMeshProUGUI turnDisplay;
     public GameObject announcePanel;
     public TextMeshProUGUI announceText;
+    public Button titleButton;
     public Button retryButton;
-    public Button exitButton;
     public Button optionButton;
 
     public GameObject nearOverlay;
@@ -73,7 +73,7 @@ public class Board : MonoBehaviour
 
         announcePanel.SetActive(false);
         retryButton.onClick.AddListener(RetryButton);
-        exitButton.onClick.AddListener(ExitButton);
+        titleButton.onClick.AddListener(TitleButton);
         optionButton.onClick.AddListener(OptionButton);
 
         int nearCount = nearNeighborList.Count;
@@ -158,12 +158,12 @@ public class Board : MonoBehaviour
         isPause = true;
     }
 
-    private void RetryButton()
+    private void TitleButton()
     {
-        gm.LoadScene(Scenes.Game);
+        gm.LoadScene(Scenes.Title);
     }
 
-    private void ExitButton()
+    private void RetryButton()
     {
         if (isPause)
         {
@@ -171,7 +171,7 @@ public class Board : MonoBehaviour
             isPause = false;
         }
         else
-            gm.LoadScene(Scenes.Title);
+            gm.LoadScene(Scenes.Game);
     }
 
     private void Update()
