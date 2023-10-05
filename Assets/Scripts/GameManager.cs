@@ -5,7 +5,7 @@ public class GameManager : Singleton<GameManager>
 {
     public int width = 5;
     public int height = 5;
-    public AZNotation test = new ();
+    public bool isDefault;
 
     private Color[] colors = new Color[4];
 
@@ -55,4 +55,12 @@ public enum Colors
     Black,
     Red,
     Blue,
+}
+
+public enum TileType
+{
+    Tile,
+    Blank,
+    Player1,
+    Player2,
 }

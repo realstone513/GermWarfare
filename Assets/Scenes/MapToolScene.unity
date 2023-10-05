@@ -1675,7 +1675,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uBE48\uCE78"
+  m_text: "\uBE48 \uCE78"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7b20d3fca688e164fb8ee759f62f92b6, type: 2}
   m_sharedMaterial: {fileID: 2050730522006954205, guid: 7b20d3fca688e164fb8ee759f62f92b6, type: 2}

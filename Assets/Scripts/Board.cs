@@ -39,7 +39,7 @@ public class Board : MonoBehaviour
     private Queue<GameObject> useNearOverlayQueue = new();
     private Queue<GameObject> useFarOverlayQueue = new();
 
-    private List<List<Tile>> tiles = new ();
+    private List<List<Tile>> tiles = new();
     private RaycastHit2D hit;
     private GameManager gm;
     private Tile curSelectTile;
@@ -52,7 +52,10 @@ public class Board : MonoBehaviour
         height = gm.height;
         width = gm.width;
         GenerateMap();
-        SetStartPoint();
+        if (gm.isDefault)
+            SetDefaultBoard();
+        else
+            SetCustomBoard();
         ChangeTurn(1);
 
         nearNeighborList = new();
@@ -357,7 +360,12 @@ public class Board : MonoBehaviour
         }
     }
 
-    private void SetStartPoint()
+    private void SetCustomBoard()
+    {
+        // blanks -> switch is blank
+    }
+
+    private void SetDefaultBoard()
     {
         // from map info. this is test
         tiles[0][height - 1].SetGerm(GermState.Player1);
@@ -369,13 +377,11 @@ public class Board : MonoBehaviour
 
     private void GenerateMap()
     {
-        //Color black = gm.GetColor(Colors.Black);
         Color white = gm.GetColor(Colors.White);
 
         float spawnPosXStart = width % 2 == 1 ? -width / 2 : -width / 2 + 0.5f;
         float spawnPosYStart = height % 2 == 1 ? -height / 2 : -height / 2 + 0.5f;
 
-        //tiles = new List<List<Tile>>();
         for (int x = 0; x < width; x++)
         {
             tiles.Add(new List<Tile>());
@@ -384,7 +390,6 @@ public class Board : MonoBehaviour
                 Vector2 spawnPos = new(spawnPosXStart + x, spawnPosYStart + y);
                 GameObject tileInstance = Instantiate(tileObject, spawnPos, Quaternion.identity, transform);
                 Tile tile = tileInstance.GetComponent<Tile>();
-                //tile.SetTileData(x, y, (x + y) % 2 == 1 ? black : white);
                 tile.SetTileData(x, y, white);
                 tiles[x].Add(tile);
             }

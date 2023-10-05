@@ -73,6 +73,7 @@ public class TitleManager : MonoBehaviour
 
     private void PlayButton()
     {
+        gm.isDefault = true;
         gm.SetWH(width, height);
         gm.LoadScene(Scenes.Game);
     }

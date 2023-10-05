@@ -4,14 +4,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum CurrentButtonType
-{
-    Tile,
-    Blank,
-    Player1,
-    Player2,
-}
-
 public class MapTool : MonoBehaviour
 {
     public GameObject tileObject;
@@ -33,10 +25,12 @@ public class MapTool : MonoBehaviour
     public Button player1Button;
     public Button player2Button;
     public TextMeshProUGUI currentTileText;
-    private CurrentButtonType currentButtonType;
+    private TileType currentButtonType;
 
-    private List<List<Tile>> tiles = new ();
+    private List<List<Tile>> tiles = new();
+    private RaycastHit2D hit;
     private GameManager gm;
+    // private List<List<TileType>> tileTypes = new();
 
     private void Start()
     {
@@ -47,7 +41,7 @@ public class MapTool : MonoBehaviour
         widthText.text = $"{widthSlider.value}";
         heightSlider.value = height;
         heightText.text = $"{heightSlider.value}";
-        currentButtonType = CurrentButtonType.Tile;
+        currentButtonType = TileType.Tile;
 
         submitButton.onClick.AddListener(SubmitButton);
         returnButton.onClick.AddListener(ReturnButton);
@@ -59,6 +53,41 @@ public class MapTool : MonoBehaviour
         player1Button.onClick.AddListener(Player1Button);
         player2Button.onClick.AddListener(Player2Button);
         SetCurrentTileText();
+    }
+
+    private void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            hit = Physics2D.Raycast(pos, Vector2.zero);
+
+            if (hit.collider != null)
+            {
+                Tile targetTile = hit.collider.gameObject.GetComponent<Tile>();
+                switch (currentButtonType)
+                {
+                    case TileType.Tile:
+                        targetTile.SwitchIsBlank(false);
+                        targetTile.SetGerm(GermState.Inactive);
+                        break;
+                    case TileType.Blank:
+                        targetTile.SetGerm(GermState.Inactive);
+                        targetTile.SwitchIsBlank(true);
+                        break;
+                    case TileType.Player1:
+                        targetTile.SwitchIsBlank(false);
+                        targetTile.SetGerm(GermState.Player1);
+                        break;
+                    case TileType.Player2:
+                        targetTile.SwitchIsBlank(false);
+                        targetTile.SetGerm(GermState.Player2);
+                        break;
+                }
+
+                //Debug.Log(hit.collider.gameObject.name);
+            }
+        }
     }
 
     private void SubmitButton()
@@ -87,6 +116,7 @@ public class MapTool : MonoBehaviour
 
     private void PlayButton()
     {
+        gm.isDefault = false;
         gm.SetWH(width, height);
         gm.LoadScene(Scenes.Game);
     }
@@ -105,25 +135,25 @@ public class MapTool : MonoBehaviour
 
     private void TileButton()
     {
-        currentButtonType = CurrentButtonType.Tile;
+        currentButtonType = TileType.Tile;
         SetCurrentTileText();
     }
 
     private void BlankButton()
     {
-        currentButtonType = CurrentButtonType.Blank;
+        currentButtonType = TileType.Blank;
         SetCurrentTileText();
     }
 
     private void Player1Button()
     {
-        currentButtonType = CurrentButtonType.Player1;
+        currentButtonType = TileType.Player1;
         SetCurrentTileText();
     }
 
     private void Player2Button()
     {
-        currentButtonType = CurrentButtonType.Player2;
+        currentButtonType = TileType.Player2;
         SetCurrentTileText();
     }
 
@@ -131,16 +161,16 @@ public class MapTool : MonoBehaviour
     {
         switch (currentButtonType)
         {
-            case CurrentButtonType.Tile:
+            case TileType.Tile:
                 currentTileText.text = "Å¸ÀÏ";
                 break;
-            case CurrentButtonType.Blank:
+            case TileType.Blank:
                 currentTileText.text = "ºó Ä­";
                 break;
-            case CurrentButtonType.Player1:
+            case TileType.Player1:
                 currentTileText.text = "P1";
                 break;
-            case CurrentButtonType.Player2:
+            case TileType.Player2:
                 currentTileText.text = "P2";
                 break;
         }

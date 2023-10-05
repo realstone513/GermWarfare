@@ -5,7 +5,8 @@ public class Tile : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private Vector2 coord;
     public Germ germ;
-
+    private bool isBlank = false;
+    
     public bool GermActive
     {
         get { return germ.gameObject.activeSelf; }
@@ -21,6 +22,12 @@ public class Tile : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
+    public void SwitchIsBlank(bool value)
+    {
+        isBlank = value;
+        spriteRenderer.color = GameManager.Instance.GetColor(value ? Colors.Black : Colors.White);
+    }
+
     public void SetTileData(float x, float y, Color color)
     {
         gameObject.name = $"Tile ({x}, {y})";
@@ -31,6 +38,7 @@ public class Tile : MonoBehaviour
 
     public void SetGerm(GermState state)
     {
-        germ.SetState(state);
+        if (!isBlank)
+            germ.SetState(state);
     }
 }
