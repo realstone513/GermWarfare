@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class TitleManager : MonoBehaviour
 {
     public Button gameButton;
-    //public Button mapButton;
+    public Button mapToolButton;
     public Button exitButton;
     public Button playButton;
     public Button returnButton;
@@ -32,6 +32,7 @@ public class TitleManager : MonoBehaviour
     {
         wm.Open(Windows.Main);
         gameButton.onClick.AddListener(GameButton);
+        mapToolButton.onClick.AddListener(MapToolButton);
         exitButton.onClick.AddListener(ExitButton);
         playButton.onClick.AddListener(PlayButton);
         returnButton.onClick.AddListener(ReturnButton);
@@ -54,6 +55,11 @@ public class TitleManager : MonoBehaviour
     private void GameButton()
     {
         wm.Open(Windows.Play);
+    }
+
+    private void MapToolButton()
+    {
+        gm.LoadScene(Scenes.MapTool);
     }
 
     private void ExitButton()

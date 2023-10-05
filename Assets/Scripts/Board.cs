@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEngine.GraphicsBuffer;
 
 public class Board : MonoBehaviour
 {
@@ -40,7 +39,7 @@ public class Board : MonoBehaviour
     private Queue<GameObject> useNearOverlayQueue = new();
     private Queue<GameObject> useFarOverlayQueue = new();
 
-    private List<List<Tile>> tiles;
+    private List<List<Tile>> tiles = new ();
     private RaycastHit2D hit;
     private GameManager gm;
     private Tile curSelectTile;
@@ -234,33 +233,30 @@ public class Board : MonoBehaviour
     {
         GermState targetState = isPlayer1 ? GermState.Player1 : GermState.Player2;
         Vector2 coord = dest.Coord;
-
+        List<Tile> changeTiles = new() { dest };
         foreach (Vector2 neighbor in nearNeighborList)
         {
             Vector2 neighborCoord = coord + neighbor;
             Tile target = GetTile(neighborCoord);
             if (target != null && target.GermActive)
-            {
-                ChangeGermState(target, targetState);
-            }
+                changeTiles.Add(target);
         }
-        ChangeGermState(dest, targetState);
-    }
 
-    private void ChangeGermState(Tile tile, GermState state)
-    {
-        tile.SetGerm(state);
-        if (isPlayer1)
+        foreach (Tile tile in changeTiles)
         {
-            player1Gold += GetGold(gainGoldMin, gainGoldMax);
-            string txt = player1Gold.Text;
-            player1GoldText.text = $"{txt}";
-        }
-        else
-        {
-            player2Gold += GetGold(gainGoldMin, gainGoldMax);
-            string txt = player2Gold.Text;
-            player2GoldText.text = $"{txt}";
+            tile.SetGerm(targetState);
+            if (isPlayer1)
+            {
+                player1Gold += GetGold(gainGoldMin, gainGoldMax);
+                string txt = player1Gold.Text;
+                player1GoldText.text = $"{txt}";
+            }
+            else
+            {
+                player2Gold += GetGold(gainGoldMin, gainGoldMax);
+                string txt = player2Gold.Text;
+                player2GoldText.text = $"{txt}";
+            }
         }
     }
 
@@ -379,7 +375,7 @@ public class Board : MonoBehaviour
         float spawnPosXStart = width % 2 == 1 ? -width / 2 : -width / 2 + 0.5f;
         float spawnPosYStart = height % 2 == 1 ? -height / 2 : -height / 2 + 0.5f;
 
-        tiles = new List<List<Tile>>();
+        //tiles = new List<List<Tile>>();
         for (int x = 0; x < width; x++)
         {
             tiles.Add(new List<Tile>());

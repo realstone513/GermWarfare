@@ -39,6 +39,7 @@ public enum Scenes
 {
     Title,
     Game,
+    MapTool,
 }
 
 public enum GermState
