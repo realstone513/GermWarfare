@@ -5,7 +5,7 @@ public class GameManager : Singleton<GameManager>
 {
     public int width = 5;
     public int height = 5;
-    public bool isDefault;
+    public bool isDefault = true;
 
     private Color[] colors = new Color[4];
 
@@ -33,6 +33,12 @@ public class GameManager : Singleton<GameManager>
     {
         SceneManager.LoadScene((int)index);
     }
+}
+
+public enum Players
+{
+    Player1,
+    Player2,
 }
 
 public enum Scenes

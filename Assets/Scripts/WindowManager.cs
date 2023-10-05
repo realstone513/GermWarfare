@@ -35,19 +35,10 @@ public class WindowManager : MonoBehaviour
         }
     }
 
-    public GenericWindow Open(int id)
+    public void Open(Windows id)
     {
-        if (id < 0 || windows.Length <= id)
-            return null;
-
-        currentWndId = id;
+        currentWndId = (int)id;
         ToggleWindow(currentWndId);
-        return GetWindow(currentWndId);
-    }
-
-    public GenericWindow Open(Windows id)
-    {
-        return Open((int)id);
     }
 
     public void AllClose()

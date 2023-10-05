@@ -56,34 +56,36 @@ public class Board : MonoBehaviour
             SetDefaultBoard();
         else
             SetCustomBoard();
-        ChangeTurn(1);
+        ChangeTurn(Players.Player1);
 
-        nearNeighborList = new();
-        farNeighborList = new();
+        nearNeighborList = new List<Vector2>();
+        farNeighborList = new List<Vector2>();
         for (int i = -2; i <= 2; i++)
             for (int j = -2; j <= 2; j++)
             {
                 Vector2 vector = new (i, j);
                 if (i >= -1 && i <= 1 && j >= -1 && j <= 1) // i (-1, 1) && j (-1, 1)
-                    nearNeighborList.Add(new Vector2(i, j));
+                    nearNeighborList.Add(vector);
                 else
                     farNeighborList.Add(vector);
             }
-
         nearNeighborList.Remove(Vector2.zero);
+
         announcePanel.SetActive(false);
         retryButton.onClick.AddListener(RetryButton);
         exitButton.onClick.AddListener(ExitButton);
         optionButton.onClick.AddListener(OptionButton);
 
-        for (int i = 0; i < 8; i++)
+        int nearCount = nearNeighborList.Count;
+        for (int i = 0; i < nearCount; i++)
         {
             GameObject nearObj = Instantiate(nearOverlay, nearTransform);
             unuseNearOverlayQueue.Enqueue(nearObj);
             nearObj.SetActive(false);
         }
 
-        for (int i = 0; i < 16; i++)
+        int farCount = farNeighborList.Count;
+        for (int i = 0; i < farCount; i++)
         {
             GameObject farObj = Instantiate(farOverlay, farTransform);
             unuseFarOverlayQueue.Enqueue(farObj);
@@ -202,14 +204,14 @@ public class Board : MonoBehaviour
 
                         if (CheckNearTile(diffX, diffY)) // Near
                         {
-                            ChangeNeighborGerm(targetTile);
-                            ChangeTurn(isPlayer1 ? 2 : 1);
+                            ChangeNeighborGerm(targetTile, true);
+                            ChangeTurn(isPlayer1 ? Players.Player2 : Players.Player1);
                         }
                         else if (CheckFarTile(diffX, diffY)) // Far
                         {
                             curSelectTile.SetGerm(GermState.Inactive);
-                            ChangeNeighborGerm(targetTile);
-                            ChangeTurn(isPlayer1 ? 2 : 1);
+                            ChangeNeighborGerm(targetTile, false);
+                            ChangeTurn(isPlayer1 ? Players.Player2 : Players.Player1);
                         }
                         else
                         {
@@ -232,7 +234,7 @@ public class Board : MonoBehaviour
         }
     }
 
-    private void ChangeNeighborGerm(Tile dest)
+    private void ChangeNeighborGerm(Tile dest, bool isNear)
     {
         GermState targetState = isPlayer1 ? GermState.Player1 : GermState.Player2;
         Vector2 coord = dest.Coord;
@@ -248,19 +250,15 @@ public class Board : MonoBehaviour
         foreach (Tile tile in changeTiles)
         {
             tile.SetGerm(targetState);
+            if (tile == dest && isNear == false)
+                continue;
             if (isPlayer1)
-            {
                 player1Gold += GetGold(gainGoldMin, gainGoldMax);
-                string txt = player1Gold.Text;
-                player1GoldText.text = $"{txt}";
-            }
             else
-            {
                 player2Gold += GetGold(gainGoldMin, gainGoldMax);
-                string txt = player2Gold.Text;
-                player2GoldText.text = $"{txt}";
-            }
         }
+        player1GoldText.text = $"{player1Gold.Text}";
+        player2GoldText.text = $"{player2Gold.Text}";
     }
 
     private Tile GetTile(Vector2 coord)
@@ -297,27 +295,19 @@ public class Board : MonoBehaviour
 
     private void SwitchCanPut(bool value, Tile curTile = null)
     {
-        if (value)
-        {
-            curSelectTile = curTile;
-            canPut = true;
-        }
-        else
-        {
-            curSelectTile = null;
-            canPut = false;
-        }
+        canPut = value;
+        curSelectTile = canPut ? curTile : null;
     }
 
-    private void ChangeTurn(int num)
+    private void ChangeTurn(Players playerIndex)
     {
-        if (num == 1) // Player1
+        if (playerIndex == Players.Player1) // Player1
         {
             turnDisplay.text = "P1";
             turnDisplay.color = gm.GetColor(Colors.Red);
             isPlayer1 = true;
         }
-        else if (num == 2) // Player2
+        else // Player2
         {
             turnDisplay.text = "P2";
             turnDisplay.color = gm.GetColor(Colors.Blue);
@@ -348,6 +338,7 @@ public class Board : MonoBehaviour
         player2Score.text = $"{player2Count}";
 
         // End Condition
+        // TODO: 이동 불가능 할 때 추가
         if (player1Count + player2Count == width * height || player1Count == 0 || player2Count == 0)
         {
             announcePanel.SetActive(true);
@@ -367,7 +358,7 @@ public class Board : MonoBehaviour
 
     private void SetDefaultBoard()
     {
-        // from map info. this is test
+        // 좌상우하, 좌하우상 모서리에 세균 배치
         tiles[0][height - 1].SetGerm(GermState.Player1);
         tiles[width - 1][0].SetGerm(GermState.Player1);
 

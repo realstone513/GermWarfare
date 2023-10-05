@@ -5,7 +5,7 @@ public class Tile : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private Vector2 coord;
     public Germ germ;
-    private bool isBlank = false;
+    private bool isBlank;
     
     public bool GermActive
     {
@@ -38,7 +38,8 @@ public class Tile : MonoBehaviour
 
     public void SetGerm(GermState state)
     {
-        if (!isBlank)
-            germ.SetState(state);
+        if (isBlank) return;
+
+        germ.SetState(state);
     }
 }
