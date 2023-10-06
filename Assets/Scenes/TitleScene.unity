@@ -918,7 +918,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d4922883218ef546a2eaa219ef07cc8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  firstSelected: {fileID: 0}
 --- !u!1 &334028274
 GameObject:
   m_ObjectHideFlags: 0
@@ -2563,7 +2562,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d4922883218ef546a2eaa219ef07cc8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  firstSelected: {fileID: 0}
 --- !u!1 &1706978062
 GameObject:
   m_ObjectHideFlags: 0
@@ -3197,14 +3195,6 @@ PrefabInstance:
     - target: {fileID: 104366334832833881, guid: 53285295edfbf7340897c1b64ad2be2b, type: 3}
       propertyPath: m_Name
       value: Game Manager
-      objectReference: {fileID: 0}
-    - target: {fileID: 1960471594435334661, guid: 53285295edfbf7340897c1b64ad2be2b, type: 3}
-      propertyPath: width
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1960471594435334661, guid: 53285295edfbf7340897c1b64ad2be2b, type: 3}
-      propertyPath: height
-      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 3274076054097231981, guid: 53285295edfbf7340897c1b64ad2be2b, type: 3}
       propertyPath: m_LocalPosition.x

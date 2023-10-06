@@ -10,6 +10,7 @@ public class MapTool : MonoBehaviour
 
     private int width;
     private int height;
+
     // WH Setting
     public Button submitButton;
     public Button returnButton;
@@ -64,26 +65,7 @@ public class MapTool : MonoBehaviour
             if (hit.collider != null)
             {
                 Tile targetTile = hit.collider.gameObject.GetComponent<Tile>();
-                switch (currentButtonType)
-                {
-                    case TileType.Tile:
-                        targetTile.SwitchIsBlank(false);
-                        targetTile.SetGerm(GermState.Inactive);
-                        break;
-                    case TileType.Blank:
-                        targetTile.SetGerm(GermState.Inactive);
-                        targetTile.SwitchIsBlank(true);
-                        break;
-                    case TileType.Player1:
-                        targetTile.SwitchIsBlank(false);
-                        targetTile.SetGerm(GermState.Player1);
-                        break;
-                    case TileType.Player2:
-                        targetTile.SwitchIsBlank(false);
-                        targetTile.SetGerm(GermState.Player2);
-                        break;
-                }
-
+                targetTile.TileType = currentButtonType;
                 //Debug.Log(hit.collider.gameObject.name);
             }
         }
@@ -92,6 +74,16 @@ public class MapTool : MonoBehaviour
     private void SubmitButton()
     {
         // Tiles Clear
+        TilesClear();
+
+        // Generate Map
+        width = (int)widthSlider.value;
+        height = (int)heightSlider.value;
+        GenerateMap();
+    }
+
+    private void TilesClear()
+    {
         foreach (List<Tile> tilesRow in tiles)
         {
             foreach (Tile tile in tilesRow)
@@ -101,11 +93,6 @@ public class MapTool : MonoBehaviour
             tilesRow.Clear();
         }
         tiles.Clear();
-
-        // Generate Map
-        width = (int)widthSlider.value;
-        height = (int)heightSlider.value;
-        GenerateMap();
     }
 
     private void ReturnButton()
@@ -117,6 +104,19 @@ public class MapTool : MonoBehaviour
     {
         gm.isDefault = false;
         gm.SetWH(width, height);
+
+        List<List<TileType>> tileTypes = new ();
+        for (int x = 0; x < width; x++)
+        {
+            tileTypes.Add(new List<TileType>());
+            for (int y = 0; y < height; y++)
+            {
+                tileTypes[x].Add(tiles[x][y].TileType);
+            }
+        }
+        gm.TileTypes = tileTypes;
+
+        TilesClear();
         gm.LoadScene(Scenes.Game);
     }
 
@@ -179,6 +179,7 @@ public class MapTool : MonoBehaviour
     {
         Color white = gm.GetColor(Colors.White);
 
+        // Set Screen(Panel) Center Position
         float spawnPosXStart = width % 2 == 1 ? -width / 2 : -width / 2 + 0.5f;
         float spawnPosYStart = height % 2 == 1 ? -height / 2 : -height / 2 + 0.5f;
 

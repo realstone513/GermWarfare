@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,6 +9,18 @@ public class GameManager : Singleton<GameManager>
     public bool isDefault = true;
 
     private Color[] colors = new Color[4];
+    private List<List<TileType>> tileTypes = new ();
+    public List<List<TileType>> TileTypes
+    {
+        set
+        {
+            tileTypes = value;
+        }
+        get
+        {
+            return tileTypes;
+        }
+    }
 
     protected override void Awake()
     {
@@ -66,7 +79,7 @@ public enum Colors
 public enum TileType
 {
     Tile,
-    Blank,
     Player1,
     Player2,
+    Blank,
 }

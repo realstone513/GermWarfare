@@ -2672,6 +2672,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2235870054624025540, guid: 130154e72c343c4419dfdf273dcc8716, type: 3}
+      propertyPath: retryText
+      value: 
+      objectReference: {fileID: 2116088788}
+    - target: {fileID: 2235870054624025540, guid: 130154e72c343c4419dfdf273dcc8716, type: 3}
       propertyPath: exitButton
       value: 
       objectReference: {fileID: 2000835675}

@@ -28,6 +28,7 @@ public class Board : MonoBehaviour
     public Button titleButton;
     public Button retryButton;
     public Button optionButton;
+    public TextMeshProUGUI retryText;
 
     public GameObject nearOverlay;
     public GameObject farOverlay;
@@ -95,11 +96,16 @@ public class Board : MonoBehaviour
 
     private void ShowOverlays(Tile target)
     {
-        Vector2 tartgetCoord = target.Coord;
+        Vector2 targetCoord = target.Coord;
         foreach (Vector2 near in nearNeighborList)
         {
-            if (CheckBorder(near + tartgetCoord))
+            Vector2 neighborCoord = near + targetCoord;
+
+            if (CheckBorder(neighborCoord))
             {
+                if (tiles[(int)neighborCoord.x][(int)neighborCoord.y].TileType == TileType.Blank)
+                    continue;
+
                 GameObject nearObj = unuseNearOverlayQueue.Dequeue();
                 Vector3 dest = target.transform.position;
                 dest.x += near.x;
@@ -112,8 +118,13 @@ public class Board : MonoBehaviour
 
         foreach (Vector2 far in farNeighborList)
         {
-            if (CheckBorder(far + tartgetCoord))
+            Vector2 neighborCoord = far + targetCoord;
+
+            if (CheckBorder(neighborCoord))
             {
+                if (tiles[(int)neighborCoord.x][(int)neighborCoord.y].TileType == TileType.Blank)
+                    continue;
+
                 GameObject farObj = unuseFarOverlayQueue.Dequeue();
                 Vector3 dest = target.transform.position;
                 dest.x += far.x;
@@ -202,7 +213,9 @@ public class Board : MonoBehaviour
                         int diffX = Mathf.Abs((int)(originCoord.x - curCoord.x));
                         int diffY = Mathf.Abs((int)(originCoord.y - curCoord.y));
 
-                        if (CheckNearTile(diffX, diffY)) // Near
+                        if (targetTile.TileType == TileType.Blank)
+                            SwitchCanPut(false);
+                        else if (CheckNearTile(diffX, diffY)) // Near
                         {
                             ChangeNeighborGerm(targetTile, true);
                             ChangeTurn(isPlayer1 ? Players.Player2 : Players.Player1);
@@ -348,17 +361,25 @@ public class Board : MonoBehaviour
                 announceText.text = $"Player2 Win!";
             else
                 announceText.text = $"Draw!";
+            retryText.text = "다시하기";
         }
     }
 
     private void SetCustomBoard()
     {
-        // blanks -> switch is blank
+        List<List<TileType>> tileTypes = gm.TileTypes;
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                tiles[x][y].TileType = tileTypes[x][y];
+            }
+        }
     }
 
     private void SetDefaultBoard()
     {
-        // 좌상우하, 좌하우상 모서리에 세균 배치
         tiles[0][height - 1].SetGerm(GermState.Player1);
         tiles[width - 1][0].SetGerm(GermState.Player1);
 
@@ -370,6 +391,7 @@ public class Board : MonoBehaviour
     {
         Color white = gm.GetColor(Colors.White);
 
+        // Set Screen(Panel) Center Position
         float spawnPosXStart = width % 2 == 1 ? -width / 2 : -width / 2 + 0.5f;
         float spawnPosYStart = height % 2 == 1 ? -height / 2 : -height / 2 + 0.5f;
 

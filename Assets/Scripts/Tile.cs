@@ -4,6 +4,28 @@ public class Tile : MonoBehaviour
 {
     private SpriteRenderer spriteRenderer;
     private Vector2 coord;
+    private TileType tileType;
+    public TileType TileType
+    {
+        get { return tileType; }
+        set
+        {
+            tileType = value;
+            switch (tileType)
+            {
+                case TileType.Tile:
+                case TileType.Player1:
+                case TileType.Player2:
+                    SwitchIsBlank(false);
+                    SetGerm((GermState)value);
+                    break;
+                case TileType.Blank:
+                    SetGerm(GermState.Inactive);
+                    SwitchIsBlank(true);
+                    break;
+            }
+        }
+    }
     public Germ germ;
     private bool isBlank;
     
@@ -38,7 +60,8 @@ public class Tile : MonoBehaviour
 
     public void SetGerm(GermState state)
     {
-        if (isBlank) return;
+        if (isBlank)
+            return;
 
         germ.SetState(state);
     }
