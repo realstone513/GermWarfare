@@ -44,12 +44,14 @@ public class TitleManager : MonoBehaviour
     {
         widthText.text = $"{widthSlider.value}";
         width = (int)value;
+        gm.SetWH(width, height);
     }
 
     private void HeightChange(Single value)
     {
         heightText.text = $"{heightSlider.value}";
         height = (int)value;
+        gm.SetWH(width, height);
     }
 
     private void GameButton()

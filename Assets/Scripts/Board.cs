@@ -13,8 +13,8 @@ public class Board : MonoBehaviour
     public bool isPlayer1 = true;
     public bool canPut = false;
     private bool isPause = false;
-    private AZNotation player1Gold = new();
-    private AZNotation player2Gold = new();
+    private AZNotation player1Gold = new ();
+    private AZNotation player2Gold = new ();
     private float gainGoldMin = 100000000;
     private float gainGoldMax = 10000000000;
 
@@ -35,17 +35,17 @@ public class Board : MonoBehaviour
     public Transform nearTransform;
     public Transform farTransform;
 
-    private Queue<GameObject> unuseNearOverlayQueue = new();
-    private Queue<GameObject> unuseFarOverlayQueue = new();
-    private Queue<GameObject> useNearOverlayQueue = new();
-    private Queue<GameObject> useFarOverlayQueue = new();
+    private Queue<GameObject> unuseNearOverlayQueue = new ();
+    private Queue<GameObject> unuseFarOverlayQueue = new ();
+    private Queue<GameObject> useNearOverlayQueue = new ();
+    private Queue<GameObject> useFarOverlayQueue = new ();
 
-    private List<List<Tile>> tiles = new();
+    private List<List<Tile>> tiles = new ();
     private RaycastHit2D hit;
     private GameManager gm;
     private Tile curSelectTile;
-    private List<Vector2> nearNeighborList;
-    private List<Vector2> farNeighborList;
+    private List<Vector2> nearNeighborList = new ();
+    private List<Vector2> farNeighborList = new ();
 
     private int player1Count = 0;
     private int player2Count = 0;
@@ -54,17 +54,6 @@ public class Board : MonoBehaviour
 
     private void Start()
     {
-        gm = GameManager.Instance;
-        height = gm.height;
-        width = gm.width;
-        GenerateBoard();
-        if (gm.isDefault)
-            SetDefaultBoard();
-        else
-            SetCustomBoard();
-
-        nearNeighborList = new List<Vector2>();
-        farNeighborList = new List<Vector2>();
         for (int i = -2; i <= 2; i++)
             for (int j = -2; j <= 2; j++)
             {
@@ -96,6 +85,16 @@ public class Board : MonoBehaviour
             unuseFarOverlayQueue.Enqueue(farObj);
             farObj.SetActive(false);
         }
+
+        gm = GameManager.Instance;
+
+        height = gm.height;
+        width = gm.width;
+        GenerateBoard();
+        if (gm.isDefault)
+            SetDefaultBoard();
+        else
+            SetCustomBoard();
         ChangeTurn(Players.Player1);
     }
 
@@ -411,6 +410,7 @@ public class Board : MonoBehaviour
     private void SetCustomBoard()
     {
         List<List<TileType>> tileTypes = gm.TileTypes;
+        curBoardBlankCount = 0;
 
         for (int x = 0; x < width; x++)
         {

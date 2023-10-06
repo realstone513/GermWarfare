@@ -36,15 +36,6 @@ public class MapTool : MonoBehaviour
 
     private void Start()
     {
-        gm = GameManager.Instance;
-        width = gm.width;
-        height = gm.height;
-        widthSlider.value = width;
-        widthText.text = $"{widthSlider.value}";
-        heightSlider.value = height;
-        heightText.text = $"{heightSlider.value}";
-        currentButtonType = TileType.Tile;
-
         submitButton.onClick.AddListener(SubmitButton);
         returnButton.onClick.AddListener(ReturnButton);
         playButton.onClick.AddListener(PlayButton);
@@ -65,6 +56,17 @@ public class MapTool : MonoBehaviour
         }
         for (int i = 0; i < width; i++)
             tiles.Add(new List<Tile>());
+
+        gm = GameManager.Instance;
+        width = gm.width;
+        height = gm.height;
+        widthSlider.value = width;
+        widthText.text = $"{widthSlider.value}";
+        heightSlider.value = height;
+        heightText.text = $"{heightSlider.value}";
+        currentButtonType = TileType.Tile;
+
+        GenerateTempBoard();
     }
 
     private void Update()
