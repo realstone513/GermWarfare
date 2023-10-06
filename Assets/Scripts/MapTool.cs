@@ -28,9 +28,11 @@ public class MapTool : MonoBehaviour
     public TextMeshProUGUI currentTileText;
     private TileType currentButtonType;
 
-    private List<List<Tile>> tiles = new();
+    private List<List<Tile>> tiles = new ();
     private RaycastHit2D hit;
     private GameManager gm;
+    private Queue<Tile> unuseTiles = new ();
+    private Queue<Tile> useTiles = new ();
 
     private void Start()
     {
@@ -53,6 +55,16 @@ public class MapTool : MonoBehaviour
         player1Button.onClick.AddListener(Player1Button);
         player2Button.onClick.AddListener(Player2Button);
         SetCurrentTileText();
+
+        int count = (int) (widthSlider.maxValue * heightSlider.maxValue);
+        for (int i = 0; i < count; i++)
+        {
+            GameObject tileInstance = Instantiate(tileObject, transform);
+            unuseTiles.Enqueue(tileInstance.GetComponent<Tile>());
+            tileInstance.SetActive(false);
+        }
+        for (int i = 0; i < width; i++)
+            tiles.Add(new List<Tile>());
     }
 
     private void Update()
@@ -73,26 +85,10 @@ public class MapTool : MonoBehaviour
 
     private void SubmitButton()
     {
-        // Tiles Clear
-        TilesClear();
-
         // Generate Map
         width = (int)widthSlider.value;
         height = (int)heightSlider.value;
-        GenerateMap();
-    }
-
-    private void TilesClear()
-    {
-        foreach (List<Tile> tilesRow in tiles)
-        {
-            foreach (Tile tile in tilesRow)
-            {
-                Destroy(tile.gameObject);
-            }
-            tilesRow.Clear();
-        }
-        tiles.Clear();
+        GenerateTempBoard();
     }
 
     private void ReturnButton()
@@ -115,8 +111,6 @@ public class MapTool : MonoBehaviour
             }
         }
         gm.TileTypes = tileTypes;
-
-        TilesClear();
         gm.LoadScene(Scenes.Game);
     }
 
@@ -175,8 +169,20 @@ public class MapTool : MonoBehaviour
         }
     }
 
-    private void GenerateMap()
+    private void ClearTiles()
     {
+        while (useTiles.Count > 0)
+        {
+            Tile tile = useTiles.Dequeue();
+            tile.gameObject.SetActive(false);
+            unuseTiles.Enqueue(tile);
+        }
+        tiles.Clear();
+    }
+
+    private void GenerateTempBoard()
+    {
+        ClearTiles();
         Color white = gm.GetColor(Colors.White);
 
         // Set Screen(Panel) Center Position
@@ -188,11 +194,13 @@ public class MapTool : MonoBehaviour
             tiles.Add(new List<Tile>());
             for (int y = 0; y < height; y++)
             {
-                Vector2 spawnPos = new(spawnPosXStart + x, spawnPosYStart + y);
-                GameObject tileInstance = Instantiate(tileObject, spawnPos, Quaternion.identity, transform);
-                Tile tile = tileInstance.GetComponent<Tile>();
-                tile.SetTileData(x, y, white);
+                Vector2 spawnPos = new (spawnPosXStart + x, spawnPosYStart + y);
+                Tile tile = unuseTiles.Dequeue();
+                tile.SetTileData(x, y, white, TileType.Tile);
+                tile.transform.position = spawnPos;
+                tile.gameObject.SetActive(true);
                 tiles[x].Add(tile);
+                useTiles.Enqueue(tile);
             }
         }
     }

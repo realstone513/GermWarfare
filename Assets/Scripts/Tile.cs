@@ -44,21 +44,22 @@ public class Tile : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
-    public void SwitchIsBlank(bool value)
-    {
-        isBlank = value;
-        spriteRenderer.color = GameManager.Instance.GetColor(value ? Colors.Grey : Colors.White);
-    }
-
-    public void SetTileData(float x, float y, Color color)
+    public void SetTileData(float x, float y, Color color, TileType tileType)
     {
         gameObject.name = $"Tile ({x}, {y})";
         coord.x = x;
         coord.y = y;
         spriteRenderer.color = color;
+        TileType = tileType;
     }
 
-    public void SetGerm(GermState state)
+    private void SwitchIsBlank(bool value)
+    {
+        isBlank = value;
+        spriteRenderer.color = GameManager.Instance.GetColor(value ? Colors.Grey : Colors.White);
+    }
+
+    private void SetGerm(GermState state)
     {
         if (isBlank)
             return;

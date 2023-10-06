@@ -49,15 +49,15 @@ public class Board : MonoBehaviour
 
     private int player1Count = 0;
     private int player2Count = 0;
-    public int curBoardTileCount = 0;
-    public int curBoardBlankCount = 0;
+    private int curBoardTileCount = 0;
+    private int curBoardBlankCount = 0;
 
     private void Start()
     {
         gm = GameManager.Instance;
         height = gm.height;
         width = gm.width;
-        GenerateMap();
+        GenerateBoard();
         if (gm.isDefault)
             SetDefaultBoard();
         else
@@ -267,7 +267,7 @@ public class Board : MonoBehaviour
     {
         TileType tileType = isPlayer1 ? TileType.Player1 : TileType.Player2; ;
         Vector2 coord = dest.Coord;
-        List<Tile> changeTiles = new() { dest };
+        List<Tile> changeTiles = new () { dest };
         foreach (Vector2 neighbor in nearNeighborList)
         {
             Vector2 neighborCoord = coord + neighbor;
@@ -433,7 +433,7 @@ public class Board : MonoBehaviour
         tiles[width - 1][height - 1].TileType = TileType.Player2;
     }
 
-    private void GenerateMap()
+    private void GenerateBoard()
     {
         Color white = gm.GetColor(Colors.White);
 
@@ -446,10 +446,10 @@ public class Board : MonoBehaviour
             tiles.Add(new List<Tile>());
             for (int y = 0; y < height; y++)
             {
-                Vector2 spawnPos = new(spawnPosXStart + x, spawnPosYStart + y);
+                Vector2 spawnPos = new (spawnPosXStart + x, spawnPosYStart + y);
                 GameObject tileInstance = Instantiate(tileObject, spawnPos, Quaternion.identity, transform);
                 Tile tile = tileInstance.GetComponent<Tile>();
-                tile.SetTileData(x, y, white);
+                tile.SetTileData(x, y, white, TileType.Tile);
                 tiles[x].Add(tile);
             }
         }
