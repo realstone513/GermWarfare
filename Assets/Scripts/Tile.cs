@@ -47,7 +47,7 @@ public class Tile : MonoBehaviour
     public void SwitchIsBlank(bool value)
     {
         isBlank = value;
-        spriteRenderer.color = GameManager.Instance.GetColor(value ? Colors.Black : Colors.White);
+        spriteRenderer.color = GameManager.Instance.GetColor(value ? Colors.Grey : Colors.White);
     }
 
     public void SetTileData(float x, float y, Color color)
@@ -63,6 +63,6 @@ public class Tile : MonoBehaviour
         if (isBlank)
             return;
 
-        germ.SetState(state);
+        germ.GermState = state;
     }
 }

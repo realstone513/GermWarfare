@@ -47,6 +47,11 @@ public class Board : MonoBehaviour
     private List<Vector2> nearNeighborList;
     private List<Vector2> farNeighborList;
 
+    private int player1Count = 0;
+    private int player2Count = 0;
+    public int curBoardTileCount = 0;
+    public int curBoardBlankCount = 0;
+
     private void Start()
     {
         gm = GameManager.Instance;
@@ -57,7 +62,6 @@ public class Board : MonoBehaviour
             SetDefaultBoard();
         else
             SetCustomBoard();
-        ChangeTurn(Players.Player1);
 
         nearNeighborList = new List<Vector2>();
         farNeighborList = new List<Vector2>();
@@ -92,6 +96,7 @@ public class Board : MonoBehaviour
             unuseFarOverlayQueue.Enqueue(farObj);
             farObj.SetActive(false);
         }
+        ChangeTurn(Players.Player1);
     }
 
     private void ShowOverlays(Tile target)
@@ -99,48 +104,59 @@ public class Board : MonoBehaviour
         Vector2 targetCoord = target.Coord;
         foreach (Vector2 near in nearNeighborList)
         {
-            Vector2 neighborCoord = near + targetCoord;
-
-            if (CheckBorder(neighborCoord))
-            {
-                if (tiles[(int)neighborCoord.x][(int)neighborCoord.y].TileType == TileType.Blank)
-                    continue;
-
-                GameObject nearObj = unuseNearOverlayQueue.Dequeue();
-                Vector3 dest = target.transform.position;
-                dest.x += near.x;
-                dest.y += near.y;
-                nearObj.transform.position = dest;
-                nearObj.SetActive(true);
-                useNearOverlayQueue.Enqueue(nearObj);
-            }
+            if (CheckMovable(near + targetCoord))
+                SetNearOverlay(target, near);
         }
 
         foreach (Vector2 far in farNeighborList)
         {
-            Vector2 neighborCoord = far + targetCoord;
-
-            if (CheckBorder(neighborCoord))
-            {
-                if (tiles[(int)neighborCoord.x][(int)neighborCoord.y].TileType == TileType.Blank)
-                    continue;
-
-                GameObject farObj = unuseFarOverlayQueue.Dequeue();
-                Vector3 dest = target.transform.position;
-                dest.x += far.x;
-                dest.y += far.y;
-                farObj.transform.position = dest;
-                farObj.SetActive(true);
-                useFarOverlayQueue.Enqueue(farObj);
-            }
+            if (CheckMovable(far + targetCoord))
+                SetFarOverlay(target, far);
         }
     }
 
-    private bool CheckBorder(Vector2 target)
+    private void SetNearOverlay(Tile target, Vector2 near)
     {
-        if (target.x >= 0 && target.x <= width - 1 && target.y >= 0 && target.y <= height - 1)
-            return true;
-        return false;
+        GameObject nearObj = unuseNearOverlayQueue.Dequeue();
+        Vector3 dest = target.transform.position;
+        dest.x += near.x;
+        dest.y += near.y;
+        nearObj.transform.position = dest;
+        nearObj.SetActive(true);
+        useNearOverlayQueue.Enqueue(nearObj);
+    }
+
+    private void SetFarOverlay(Tile target, Vector2 far)
+    {
+        GameObject farObj = unuseFarOverlayQueue.Dequeue();
+        Vector3 dest = target.transform.position;
+        dest.x += far.x;
+        dest.y += far.y;
+        farObj.transform.position = dest;
+        farObj.SetActive(true);
+        useFarOverlayQueue.Enqueue(farObj);
+    }
+
+    private bool CheckMovable(Vector2 target)
+    {
+        int x = (int)target.x;
+        int y = (int)target.y;
+
+        if (CheckXBorder(x) == false || CheckYBorder(y) == false) // Check Border
+            return false;
+        if (tiles[x][y].TileType != TileType.Tile)
+            return false;
+        return true;
+    }
+
+    private bool CheckXBorder(int x)
+    {
+        return x >= 0 && x <= width - 1;
+    }
+
+    private bool CheckYBorder(int y)
+    {
+        return y >= 0 && y <= height - 1;
     }
 
     private void HideOverlays()
@@ -222,7 +238,7 @@ public class Board : MonoBehaviour
                         }
                         else if (CheckFarTile(diffX, diffY)) // Far
                         {
-                            curSelectTile.SetGerm(GermState.Inactive);
+                            curSelectTile.TileType = TileType.Tile;
                             ChangeNeighborGerm(targetTile, false);
                             ChangeTurn(isPlayer1 ? Players.Player2 : Players.Player1);
                         }
@@ -235,8 +251,8 @@ public class Board : MonoBehaviour
                 }
                 else
                 {
-                    if ((isPlayer1 && targetTile.germ.germState == GermState.Player1) ||
-                        (!isPlayer1 && targetTile.germ.germState == GermState.Player2))
+                    if ((isPlayer1 && targetTile.TileType == TileType.Player1) ||
+                        (!isPlayer1 && targetTile.TileType  == TileType.Player2))
                     {
                         SwitchCanPut(true, targetTile);
                         ShowOverlays(targetTile);
@@ -249,7 +265,7 @@ public class Board : MonoBehaviour
 
     private void ChangeNeighborGerm(Tile dest, bool isNear)
     {
-        GermState targetState = isPlayer1 ? GermState.Player1 : GermState.Player2;
+        TileType tileType = isPlayer1 ? TileType.Player1 : TileType.Player2; ;
         Vector2 coord = dest.Coord;
         List<Tile> changeTiles = new() { dest };
         foreach (Vector2 neighbor in nearNeighborList)
@@ -262,7 +278,7 @@ public class Board : MonoBehaviour
 
         foreach (Tile tile in changeTiles)
         {
-            tile.SetGerm(targetState);
+            tile.TileType = tileType;
             if (tile == dest && isNear == false)
                 continue;
             if (isPlayer1)
@@ -333,26 +349,38 @@ public class Board : MonoBehaviour
 
     private void CheckBoardScore()
     {
-        int player1Count = 0;
-        int player2Count = 0;
+        player1Count = 0;
+        player2Count = 0;
 
+        bool canMove = false;
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
-                GermState state = tiles[x][y].germ.germState;
-                if (state == GermState.Player1)
+                Tile tile = tiles[x][y];
+                if (tile.TileType == TileType.Player1)
+                {
                     player1Count++;
-                else if (state == GermState.Player2)
+
+                    if (canMove == false && isPlayer1 == true)
+                        canMove = CheckCanMove(tile.Coord);
+                }
+                else if (tile.TileType == TileType.Player2)
+                {
                     player2Count++;
+
+                    if (canMove == false && isPlayer1 == false)
+                        canMove = CheckCanMove(tile.Coord);
+                }
             }
         }
         player1Score.text = $"{player1Count}";
         player2Score.text = $"{player2Count}";
 
         // End Condition
-        // TODO: 이동 불가능 할 때 추가
-        if (player1Count + player2Count == width * height || player1Count == 0 || player2Count == 0)
+        if (canMove == false ||                                 // When there are no movable germ
+            player1Count + player2Count == curBoardTileCount || // When the board is full
+            player1Count == 0 || player2Count == 0)             // When destroy one player
         {
             announcePanel.SetActive(true);
             if (player1Count > player2Count)
@@ -365,6 +393,21 @@ public class Board : MonoBehaviour
         }
     }
 
+    private bool CheckCanMove(Vector2 targetCoord)
+    {
+        foreach (Vector2 near in nearNeighborList)
+        {
+            if (CheckMovable(near + targetCoord))
+                return true;
+        }
+        foreach (Vector2 far in farNeighborList)
+        {
+            if (CheckMovable(far + targetCoord))
+                return true;
+        }
+        return false;
+    }
+
     private void SetCustomBoard()
     {
         List<List<TileType>> tileTypes = gm.TileTypes;
@@ -374,17 +417,20 @@ public class Board : MonoBehaviour
             for (int y = 0; y < height; y++)
             {
                 tiles[x][y].TileType = tileTypes[x][y];
+                if (tileTypes[x][y] == TileType.Blank)
+                    curBoardBlankCount++;
             }
         }
+        curBoardTileCount = width * height - curBoardBlankCount;
     }
 
     private void SetDefaultBoard()
     {
-        tiles[0][height - 1].SetGerm(GermState.Player1);
-        tiles[width - 1][0].SetGerm(GermState.Player1);
+        tiles[0][height - 1].TileType = TileType.Player1;
+        tiles[width - 1][0].TileType = TileType.Player1;
 
-        tiles[0][0].SetGerm(GermState.Player2);
-        tiles[width - 1][height - 1].SetGerm(GermState.Player2);
+        tiles[0][0].TileType = TileType.Player2;
+        tiles[width - 1][height - 1].TileType = TileType.Player2;
     }
 
     private void GenerateMap()

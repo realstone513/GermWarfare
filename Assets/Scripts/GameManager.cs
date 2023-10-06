@@ -26,7 +26,7 @@ public class GameManager : Singleton<GameManager>
     {
         base.Awake();
         colors[0] = Color.white;
-        colors[1] = Color.black;
+        colors[1] = Color.grey;
         colors[2] = Color.red;
         colors[3] = Color.blue;
     }
@@ -71,7 +71,7 @@ public enum GermState
 public enum Colors
 {
     White,
-    Black,
+    Grey,
     Red,
     Blue,
 }
