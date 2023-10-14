@@ -13,15 +13,15 @@ public class Board : MonoBehaviour
     public bool isPlayer1 = true;
     public bool canPut = false;
     private bool isPause = false;
-    private AZNotation player1Gold = new ();
-    private AZNotation player2Gold = new ();
-    private float gainGoldMin = 100000000;
-    private float gainGoldMax = 10000000000;
+    //private AZNotation player1Gold = new ();
+    //private AZNotation player2Gold = new ();
+    //private float gainGoldMin = 100000000;
+    //private float gainGoldMax = 10000000000;
 
     public TextMeshProUGUI player1Score;
     public TextMeshProUGUI player2Score;
-    public TextMeshProUGUI player1GoldText;
-    public TextMeshProUGUI player2GoldText;
+    //public TextMeshProUGUI player1GoldText;
+    //public TextMeshProUGUI player2GoldText;
     public TextMeshProUGUI turnDisplay;
     public GameObject announcePanel;
     public TextMeshProUGUI announceText;
@@ -280,13 +280,13 @@ public class Board : MonoBehaviour
             tile.TileType = tileType;
             if (tile == dest && isNear == false)
                 continue;
-            if (isPlayer1)
-                player1Gold += GetGold(gainGoldMin, gainGoldMax);
-            else
-                player2Gold += GetGold(gainGoldMin, gainGoldMax);
+            //if (isPlayer1)
+            //    player1Gold += GetGold(gainGoldMin, gainGoldMax);
+            //else
+            //    player2Gold += GetGold(gainGoldMin, gainGoldMax);
         }
-        player1GoldText.text = $"{player1Gold.Text}";
-        player2GoldText.text = $"{player2Gold.Text}";
+        //player1GoldText.text = $"{player1Gold.Text}";
+        //player2GoldText.text = $"{player2Gold.Text}";
     }
 
     private Tile GetTile(Vector2 coord)
